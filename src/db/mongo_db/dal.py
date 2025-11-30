@@ -21,10 +21,13 @@ class Dal:
     def find(self, collection_name, query):
         return self.connection.db[collection_name].find(query)
 
-    def find_all(self, collection_name):
+    def find_all(self, collection_name=None):
+        collection_name: str = collection_name or self.default_collection
         return list(self.connection.db[collection_name].find())
 
-    def find_all_without_id(self, collection_name):
+    def find_all_without_id(self, collection_name=None):
+        collection_name: str = collection_name or self.default_collection
+        print(collection_name)
         return list(self.connection.db[collection_name].find({},{'_id':0}))
 
     def find_by_id(self, collection_name, doc_id):
@@ -35,7 +38,8 @@ class Dal:
     def update_one(self, collection_name, query, document):
         return self.connection.db[collection_name].update_one(query, document)
 
-    def delete_one(self, collection_name, query):
+    def delete_one(self, query, collection_name=None):
+        collection_name: str = collection_name or self.default_collection
         return self.connection.db[collection_name].delete_one(query)
 
     def delete_all(self, collection_name):
@@ -43,7 +47,3 @@ class Dal:
 
     def count_documents(self, collection_name, query):
         return self.connection.db[collection_name].count_documents(query)
-
-if __name__ == '__main__':
-    mongo = Dal('todo')
-    mongo.insert_one({'_id': 'test', 'text': 'test'})
