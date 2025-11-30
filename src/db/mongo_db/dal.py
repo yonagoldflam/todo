@@ -46,4 +46,4 @@ class Dal:
 
 if __name__ == '__main__':
     mongo = Dal('todo')
-    mongo.insert_one({'_id': 'test', 'text': 'test'})
+    mongo.insert_one({'_id': 'test', 'text': 'est'})
