@@ -7,7 +7,6 @@ from src.schemas.user_schema import UserCreate
 class UseerManager:
     def __init__(self):
         self.dal = Dal(default_collection='users')
-        self.auth = Auth()
 
     def insert_new_user(self, user: UserCreate) -> None:
         doc = user.model_dump()
