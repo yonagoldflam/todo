@@ -1,0 +1,36 @@
+from datetime import datetime, timedelta
+import jwt
+from passlib.context import CryptContext
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from conts import Token
+from src.models.token_payload import TokenPayload
+
+
+class Auth:
+    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
+    def __init__(self):
+        self.secret_key = Token.SECRET_KEY
+        self.algorithm = Token.ALGORITHM
+        self.exp_token = Token.TOKEN_EXPIRATION
+        self.password_context = CryptContext(schemes=["argon2"], deprecated="auto")
+
+    def create_token(self, subject):
+        now = datetime.utcnow()
+        expire = now + timedelta(minutes=self.exp_token)
+        token_payload = TokenPayload(sub=subject, iat=now, exp=expire)
+        return jwt.encode(token_payload.model_dump(), self.secret_key, algorithm=self.algorithm)
+
+
+    def hash_password(self, password: str) -> str:
+        return self.password_context.hash(password)
+
+    def verify_password(self, password: str, hashed_password: str) -> bool:
+        return self.password_context.verify(password, hashed_password)
+
+    def verify_token(self, token: str = Depends(oauth2_scheme)) -> TokenPayload:
+        try:
+            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
+            return TokenPayload(**payload)
+        except jwt.PyJWTError:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='invalid token')
