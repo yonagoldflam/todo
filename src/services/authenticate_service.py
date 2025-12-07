@@ -3,16 +3,16 @@ import jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from conts import Token
 from src.models.token_payload import TokenPayload
+from config import token_model
 
 
 class Auth:
-    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
+    oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
     def __init__(self):
-        self.secret_key = Token.SECRET_KEY
-        self.algorithm = Token.ALGORITHM
-        self.exp_token = Token.TOKEN_EXPIRATION
+        self.secret_key = token_model.secret_key
+        self.algorithm = token_model.algo
+        self.exp_token = token_model.exp_token
         self.password_context = CryptContext(schemes=["argon2"], deprecated="auto")
 
     def create_token(self, subject):

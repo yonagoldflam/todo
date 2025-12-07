@@ -6,18 +6,18 @@ class Request:
         self.base_url = base_url
 
     def new_user(self, username_password: dict[str, str]) -> None:
-        response = requests.post(f"{self.base_url}/new_user", json=username_password)
+        response = requests.post(f"{self.base_url}/users", json=username_password)
         print(f"{response.status_code}")
 
     def get_token(self, username_password: dict[str, str]) -> str:
-        response = requests.post(f"{self.base_url}/login", json=username_password)
+        response = requests.post(f"{self.base_url}/users/login", json=username_password)
         print(response.status_code)
         print(response.json())
         token = response.json().get('access_token')
         return token
 
     def new_todo(self, todo: dict[str, str], token: str) -> None:
-        response = requests.post(f"{self.base_url}/todo", json=todo, headers={'Authorization': f'Bearer {token}'})
+        response = requests.post(f"{self.base_url}/todos", json=todo, headers={'Authorization': f'Bearer {token}'})
         print(f"{response.status_code} \nnew id: {response.json().get('new_id')}")
 
     def get_all_todos(self, token: str) -> None:
@@ -25,7 +25,7 @@ class Request:
         print(f'{response.status_code} \n{response.text}')
 
     def delete_todo(self, id: str, token: str) -> None:
-        response = requests.delete(f"{self.base_url}/delete", params={"id": id},
+        response = requests.delete(f"{self.base_url}/todos/{id}",
                                    headers={'Authorization': f'Bearer {token}'})
         print(response.status_code)
 

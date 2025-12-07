@@ -1,16 +1,16 @@
-import os
 import pymongo
 from pymongo.errors import PyMongoError
+from config import db_model
 
 class Connection:
     def __init__(self):
         try:
-            mongo_user = os.getenv('MONGO_USER', 'shneyor')
-            mongo_password = os.getenv('MONGO_PASSWORD', 'zalmen')
-            mongo_db = os.getenv('MONGO_DB', 'todo_db')
-            mongo_host = os.getenv('MONGO_HOST', 'localhost')
-            mongo_port = os.getenv('MONGO_PORT', '27017')
-            auth_db = os.getenv('MONGO_AUTH_DB','admin')
+            mongo_user = db_model.user
+            mongo_password = db_model.password
+            mongo_db = db_model.db_name
+            mongo_host = db_model.host
+            mongo_port = db_model.port
+            auth_db = db_model.auth_db
 
             self.client = pymongo.MongoClient(
                 host=mongo_host,
