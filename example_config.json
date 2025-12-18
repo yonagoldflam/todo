@@ -6,7 +6,7 @@
     "jwt": {
         "secret_key": "ein-lecha-cikuy-laalot-al-ze",
         "algo": "HS256",
-        "exp_token": "10"
+        "exp_token": "30"
     },
     "mongo":{
         "host": "localhost",

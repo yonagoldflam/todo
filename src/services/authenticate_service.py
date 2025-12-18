@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
 import jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from src.models.token_payload import TokenPayload
 from config import token_model
+from exceptions import InvalidToken, InvalidPassword
 
 
 class Auth:
@@ -25,12 +26,13 @@ class Auth:
     def hash_password(self, password: str) -> str:
         return self.password_context.hash(password)
 
-    def verify_password(self, password: str, hashed_password: str) -> bool:
-        return self.password_context.verify(password, hashed_password)
+    def verify_password(self, password: str, hashed_password: str) -> None:
+        if not self.password_context.verify(password, hashed_password):
+            raise InvalidPassword()
 
     def verify_token(self, token: str = Depends(oauth2_scheme)) -> TokenPayload:
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
             return TokenPayload(**payload)
-        except jwt.PyJWTError:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='invalid token')
+        except jwt.PyJWTError as e:
+            raise InvalidToken(e)

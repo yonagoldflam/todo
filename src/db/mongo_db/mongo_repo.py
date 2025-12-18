@@ -1,6 +1,10 @@
+import logging
+
+from bson import ObjectId
 from src.db.mongo_db.connection import Connection
 from pymongo.errors import PyMongoError
 from src.db.repo import Repo
+from exceptions import MongoException
 
 
 class MongoRepo(Repo):
@@ -8,35 +12,70 @@ class MongoRepo(Repo):
         self.collection_name: str = collection_name
         self.connection: Connection = Connection()
 
-    def insert_one(self, document: dict):
+    def insert_one(self, document: dict) -> str:
+        doc_id = document.get('_id')
+        if doc_id:
+            document['_id'] = ObjectId(doc_id)
         try:
-            return self.connection.db[self.collection_name].insert_one(document)
+            result = self.connection.db[self.collection_name].insert_one(document)
+            logging.info(f"Inserted {result.inserted_id}")
+            return str(result.inserted_id)
         except PyMongoError as e:
-            print(e)
+            raise MongoException(str(e))
 
-    def find_all(self, query: dict[str, str]):
-
+    def find_all(self, query: dict = None) -> list:
+        query = query or {}
+        doc_id = query.get('_id')
+        if doc_id:
+            query['_id'] = ObjectId(doc_id)
         try:
-            return self.connection.db[self.collection_name].find(query)
+            docs = list(self.connection.db[self.collection_name].find(query))
+            logging.info(f"Found {len(docs)} documents")
         except PyMongoError as e:
-            print(e)
+            raise MongoException(str(e))
 
-    def find_one(self, query):
+        for doc in docs:
+            doc['id'] = str(doc['_id'])
+            del doc['_id']
+            if doc.get('date'):
+                doc['date'] = str(doc['date'])
+            if doc.get('due_date'):
+                doc['due_date'] = str(doc['due_date'])
+        return docs
+
+    def find_one(self, query: dict = None):
+        query = query or {}
+        doc_id = query.get('_id')
+        if doc_id:
+            query['_id'] = ObjectId(doc_id)
         try:
-            return self.connection.db[self.collection_name].find_one(query)
+            doc = self.connection.db[self.collection_name].find_one(query)
+            logging.info(f"Found {doc} document")
+            if doc:
+                doc['id'] = str(doc['_id'])
+                del doc['_id']
+                if doc.get('date'):
+                    doc['date'] = str(doc['date'])
+                if doc.get('due_date'):
+                    doc['due_date'] = str(doc['due_date'])
+                return doc
         except PyMongoError as e:
-            print(e)
+            raise MongoException(str(e))
 
     def delete_one(self, query):
+        doc_id = query.get('_id')
+        if doc_id:
+            query['_id'] = ObjectId(doc_id)
         try:
             return self.connection.db[self.collection_name].delete_one(query)
         except PyMongoError as e:
-            print(e)
+            raise MongoException(str(e))
 
     def exists(self, query) -> bool:
+        doc_id = query.get('_id')
+        if doc_id:
+            query['_id'] = ObjectId(doc_id)
         try:
             return self.connection.db[self.collection_name].count_documents(query, limit=1) > 0
         except PyMongoError as e:
-            print(e)
-        return False
-
+            raise MongoException(str(e))

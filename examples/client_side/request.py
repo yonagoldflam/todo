@@ -8,6 +8,7 @@ class Request:
     def new_user(self, username_password: dict[str, str]) -> None:
         response = requests.post(f"{self.base_url}/users", json=username_password)
         print(f"{response.status_code}")
+        print(f"{response.json()}")
 
     def get_token(self, username_password: dict[str, str]) -> str:
         response = requests.post(f"{self.base_url}/users/login", json=username_password)
@@ -18,7 +19,7 @@ class Request:
 
     def new_todo(self, todo: dict[str, str], token: str) -> None:
         response = requests.post(f"{self.base_url}/todos", json=todo, headers={'Authorization': f'Bearer {token}'})
-        print(f"{response.status_code} \nnew id: {response.json().get('new_id')}")
+        print(f"{response.status_code} \n{response.json()}")
 
     def get_all_todos(self, token: str) -> None:
         response = requests.get(f"{self.base_url}/todos", headers={'Authorization': f'Bearer {token}'})
@@ -28,6 +29,7 @@ class Request:
         response = requests.delete(f"{self.base_url}/todos/{id}",
                                    headers={'Authorization': f'Bearer {token}'})
         print(response.status_code)
+        print(response.json())
 
 
 class Menu:
@@ -63,7 +65,8 @@ class Menu:
 
                             case '2':
                                 todo = input('enter todo: ')
-                                self.request.new_todo({'todo': todo}, self.current_token)
+                                due_date = input('enter date day/month/year houer:minuts: ')
+                                self.request.new_todo({'todo': todo, 'due_date': due_date}, self.current_token)
 
                             case '3':
                                 id = input('enter id to delete: ')
@@ -83,3 +86,5 @@ class Menu:
 menu = Menu()
 if __name__ == '__main__':
     menu.menu()
+
+"25/01/2025 12:13"

@@ -4,7 +4,7 @@ from typing import Any
 
 class Repo(ABC):
 
-    def insert_one(self, data):
+    def insert_one(self, data) -> str:
         pass
 
     def find_all(self, query: dict[str, Any]):

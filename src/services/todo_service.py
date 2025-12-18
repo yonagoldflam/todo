@@ -1,34 +1,35 @@
-from config import mongo_connection
-from src.db.mongo_db.mongo_repo import MongoRepo
 from datetime import datetime
-from bson import ObjectId
 from src.db.repo import Repo
 from src.models.todo_doc import ToDoDocument
 from src.schemas.todo_schema import ToDoCreate, ToDoResponse, ToDoId
+from exceptions import DocNotExist, NotAuthUser, DateFormatError
 
 
 class ToDoService:
-    def __init__(self):
-        if mongo_connection:
-            self.repo: Repo = MongoRepo(collection_name='todo')
+    def __init__(self, repo: Repo):
+        self.repo = repo
 
     def get_all_todos(self, username: str) -> list[ToDoResponse]:
-        todos = list(self.repo.find_all({'username': username}))
-        todo_models: list[ToDoResponse] = [
-            ToDoResponse(id=str(todo['_id']), username=todo['username'], todo=todo['todo'], date=str(todo['date'])) for
-            todo in todos]
+        todos = self.repo.find_all({'username': username})
+        todo_models: list[ToDoResponse] = [ToDoResponse(**todo) for todo in todos]
         return todo_models
 
     def insert_todo(self, todo: ToDoCreate, username: str) -> ToDoId:
-        todo_doc = ToDoDocument(username=username, todo=todo.todo, date=datetime.now())
-        result = self.repo.insert_one(todo_doc.model_dump())
-        return ToDoId(new_id=str(result.inserted_id))
+        try:
+            due_date = datetime.strptime(todo.due_date, "%d/%m/%Y %H:%M")
+        except ValueError as e:
+            raise DateFormatError(e)
+        todo_doc = ToDoDocument(username=username, todo=todo.todo, due_date=due_date, date=datetime.now())
+        new_id = self.repo.insert_one(todo_doc.model_dump())
+        return ToDoId(new_id=new_id)
 
     def delete_todo(self, id: str) -> None:
-        self.repo.delete_one({'_id': ObjectId(id)})
+        self.repo.delete_one({'_id': id})
 
-    def doc_exists_by_id(self, id: str) -> bool:
-        return self.repo.exists({'_id': ObjectId(id)})
+    def doc_exists_by_id(self, id: str) -> None:
+        if not self.repo.exists({'_id': id}):
+            raise DocNotExist()
 
-    def doc_exists_by_id_and_username(self, id: str, username: str) -> bool:
-        return self.repo.exists({'_id': ObjectId(id), 'username': username})
+    def doc_exists_by_id_and_username(self, id: str, username: str) -> None:
+        if not self.repo.exists({'_id': id, 'username': username}):
+            raise NotAuthUser()
