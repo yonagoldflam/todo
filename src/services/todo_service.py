@@ -15,10 +15,7 @@ class ToDoService:
         return todo_models
 
     def insert_todo(self, todo: ToDoCreate, username: str) -> ToDoId:
-        try:
-            due_date = datetime.strptime(todo.due_date, "%d/%m/%Y %H:%M")
-        except ValueError as e:
-            raise DateFormatError(e)
+        due_date = self.format_datetime(todo.due_date)
         todo_doc = ToDoDocument(username=username, todo=todo.todo, due_date=due_date, date=datetime.now())
         new_id = self.repo.insert_one(todo_doc.model_dump())
         return ToDoId(new_id=new_id)
@@ -33,3 +30,9 @@ class ToDoService:
     def doc_exists_by_id_and_username(self, id: str, username: str) -> None:
         if not self.repo.exists({'_id': id, 'username': username}):
             raise NotAuthUser()
+
+    def format_datetime(self, date_time: str)-> datetime:
+        try:
+            return datetime.strptime(date_time, "%d/%m/%Y %H:%M")
+        except ValueError as e:
+            raise DateFormatError(e)

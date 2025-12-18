@@ -3,36 +3,36 @@ from fastapi import HTTPException, status
 
 class MongoException(HTTPException):
     def __init__(self, detail: str):
-        super().__init__(status_code= 503, detail=detail)
+        super().__init__(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=detail)
 
 class UserNotFound(HTTPException):
     def __init__(self):
-        super().__init__(status_code = 404, detail = "User not found")
+        super().__init__(status_code = status.HTTP_404_NOT_FOUND, detail = "User not found")
 
 class UserAlreadyExists(HTTPException):
     def __init__(self):
-        super().__init__(status_code=409, detail="Username already exists")
+        super().__init__(status_code=status.HTTP_409_CONFLICT, detail="Username already exists")
 
 class InvalidPassword(HTTPException):
     def __init__(self):
-        super().__init__(status_code=401, detail="Invalid password")
+        super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password")
 
 class InvalidUsername(HTTPException):
     def __init__(self):
-        super().__init__(status_code=401, detail="Invalid username")
+        super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid username")
 
 class InvalidToken(HTTPException):
     def __init__(self, detail):
-        super().__init__(status_code=401, detail=detail)
+        super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail=detail)
 
 class DocNotExist(HTTPException):
     def __init__(self):
-        super().__init__(status_code=404, detail="Document dosn't exist")
+        super().__init__(status_code=status.HTTP_404_NOT_FOUND, detail="Document dosn't exist")
 
 class NotAuthUser(HTTPException):
     def __init__(self):
-        super().__init__(status_code=401, detail="username does not have access to the todo document")
+        super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail="username does not have access to the todo document")
 
 class DateFormatError(HTTPException):
     def __init__(self, detail):
-        super().__init__(status_code=409, detail=f"client date time field: {detail}")
+        super().__init__(status_code=status.HTTP_409_CONFLICT, detail=f"client date time field: {detail}")
