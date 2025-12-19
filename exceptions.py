@@ -36,3 +36,15 @@ class NotAuthUser(HTTPException):
 class DateFormatError(HTTPException):
     def __init__(self, detail):
         super().__init__(status_code=status.HTTP_409_CONFLICT, detail=f"client date time field: {detail}")
+
+class NotConfigured(HTTPException):
+    def __init__(self):
+        super().__init__(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="CONFIG_PATH environment variable is not set")
+
+class FileConError(HTTPException):
+    def __init__(self):
+        super().__init__(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="can't open the config file")
+
+class FileLogError(HTTPException):
+    def __init__(self, detail):
+        super().__init__(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=detail)

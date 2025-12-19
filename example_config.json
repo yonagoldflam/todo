@@ -15,5 +15,9 @@
         "password": "zalmen",
         "db_name": "todo_db",
         "auth_db": "admin"
+    },
+    "logging": {
+        "file": "C:/ToDo/examples/file_logger/logger.log"
     }
+
 }

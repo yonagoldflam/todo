@@ -10,12 +10,12 @@ class Request:
         print(f"{response.status_code}")
         print(f"{response.json()}")
 
-    def get_token(self, username_password: dict[str, str]) -> str:
+    def get_token(self, username_password: dict[str, str]):
         response = requests.post(f"{self.base_url}/users/login", json=username_password)
         print(response.status_code)
         print(response.json())
         token = response.json().get('access_token')
-        return token
+        return response
 
     def new_todo(self, todo: dict[str, str], token: str) -> None:
         response = requests.post(f"{self.base_url}/todos", json=todo, headers={'Authorization': f'Bearer {token}'})
@@ -51,9 +51,12 @@ class Menu:
                 case '2':
                     username = input('enter your username: ')
                     password = input('enter your password: ')
-                    self.current_token = self.request.get_token({'username': username, 'password': password})
-
-                    dip_flag = True
+                    res = self.request.get_token({'username': username, 'password': password})
+                    if res.status_code == 200:
+                        self.current_token = res.json().get('access_token')
+                        dip_flag = True
+                    else:
+                        dip_flag = False
                     while dip_flag:
                         match input('1. get all \n'
                                     '2. insert todo \n'

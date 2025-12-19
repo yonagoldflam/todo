@@ -2,7 +2,7 @@ import pymongo
 from pymongo.errors import PyMongoError
 from config import db_model
 from exceptions import MongoException
-import logging
+from config import logger
 
 class Connection:
     def __init__(self):
@@ -23,7 +23,7 @@ class Connection:
             )
 
             self.db = self.client[mongo_db]
-            logging.info("Connection established")
+            logger.info("Connection established")
 
         except PyMongoError as e:
             raise MongoException(str(e))
