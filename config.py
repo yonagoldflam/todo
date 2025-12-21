@@ -5,7 +5,8 @@ from exceptions import NotConfigured, FileConError, FileLogError
 from src.models.mongo_connection import MongoConnection
 from src.models.token_auth import Token
 from src.models.run_server import RunServer
-import logging
+from src.logging.file_logger import FileLogger
+from src.logging.elastic_logger import EsLogger
 
 
 load_dotenv()
@@ -28,11 +29,10 @@ if mongo_connection:
 token_model = Token(**config_json["jwt"])
 
 
-if config_json["logging"]:
-    file_path = config_json["logging"].get("file")
-    if file_path:
-        try:
-            logging.basicConfig(filename=file_path, encoding='utf-8', level=logging.INFO)
-        except Exception as e:
-            raise FileLogError(e)
-logger = logging.getLogger(__name__)
+log_type = config_json.get("logging")
+if log_type:
+    if log_type.get("file"):
+        logger = FileLogger(**log_type["file"]).get_logger()
+
+    elif log_type.get("elastic"):
+        logger = EsLogger(**config_json["logging"]["elastic"]).get_logger()

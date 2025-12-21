@@ -16,8 +16,16 @@
         "db_name": "todo_db",
         "auth_db": "admin"
     },
-    "logging": {
-        "file": "C:/ToDo/examples/file_logger/logger.log"
+    "logging":{
+        "file": {
+            "path": "C:/ToDo/examples/file_logger/logger.log",
+            "level": "INFO"
+        }
+        ,
+        "elastic": {
+            "host": "http://127.0.0.1:9200",
+            "index": "todo",
+            "level": "INFO"
+        }
     }
-
 }

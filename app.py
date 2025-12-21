@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request
 import uvicorn as uv
 from starlette.responses import JSONResponse
-
 from config import run_server
 from src.routs.user_routs import user_router
 from src.routs.todo_routs import todo_router

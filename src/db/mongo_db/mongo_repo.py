@@ -1,5 +1,4 @@
-import logging
-
+from config import logger
 from bson import ObjectId
 from src.db.mongo_db.connection import Connection
 from pymongo.errors import PyMongoError
@@ -18,7 +17,7 @@ class MongoRepo(Repo):
             document['_id'] = ObjectId(doc_id)
         try:
             result = self.connection.db[self.collection_name].insert_one(document)
-            logging.info(f"Inserted {result.inserted_id}")
+            logger.info(f"Inserted {result.inserted_id}")
             return str(result.inserted_id)
         except PyMongoError as e:
             raise MongoException(str(e))
@@ -30,7 +29,7 @@ class MongoRepo(Repo):
             query['_id'] = ObjectId(doc_id)
         try:
             docs = list(self.connection.db[self.collection_name].find(query))
-            logging.info(f"Found {len(docs)} documents")
+            logger.info(f"Found {len(docs)} documents")
         except PyMongoError as e:
             raise MongoException(str(e))
 
@@ -50,7 +49,7 @@ class MongoRepo(Repo):
             query['_id'] = ObjectId(doc_id)
         try:
             doc = self.connection.db[self.collection_name].find_one(query)
-            logging.info(f"Found {doc} document")
+            logger.info(f"Found {doc} document")
             if doc:
                 doc['id'] = str(doc['_id'])
                 del doc['_id']
@@ -67,7 +66,9 @@ class MongoRepo(Repo):
         if doc_id:
             query['_id'] = ObjectId(doc_id)
         try:
-            return self.connection.db[self.collection_name].delete_one(query)
+            res = self.connection.db[self.collection_name].delete_one(query)
+            logger.info(f"Deleted {res.deleted_count} documents")
+            return res
         except PyMongoError as e:
             raise MongoException(str(e))
 
@@ -76,6 +77,8 @@ class MongoRepo(Repo):
         if doc_id:
             query['_id'] = ObjectId(doc_id)
         try:
-            return self.connection.db[self.collection_name].count_documents(query, limit=1) > 0
+            res = self.connection.db[self.collection_name].count_documents(query, limit=1) > 0
+            logger.info(f"doc {doc_id} exists")
+            return res
         except PyMongoError as e:
             raise MongoException(str(e))

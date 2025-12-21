@@ -1,8 +1,14 @@
 import logging
+from src.logging.logger import Logger
 
 
-class FileLogger:
-    def __init__(self, file_path):
-        # self.logger = logging.getLogger(__name__)
-        logging.basicConfig(filename=file_path, encoding='utf-8', level=logging.INFO)
+class FileLogger(Logger):
+    def __init__(self, path, level=None):
+        level = logging.getLevelName(level) or logging.INFO
+        logging.basicConfig(filename=path, encoding='utf-8', level=level)
+
+    def get_logger(self) -> logging.Logger:
+        return logging.getLogger()
+
+
 
