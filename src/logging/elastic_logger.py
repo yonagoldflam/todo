@@ -18,7 +18,6 @@ class EsHandler(logging.Handler):
         except Exception as e:
             print(e)
 
-
 class EsLogger(Logger):
 
     def __init__(self, host: str, index: str, level=None):
@@ -30,5 +29,4 @@ class EsLogger(Logger):
         logger = logging.getLogger(name)
         logger.setLevel(self.level)
         logger.addHandler(EsHandler(self.host, self.index))
-
         return logger

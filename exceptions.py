@@ -44,7 +44,3 @@ class NotConfigured(HTTPException):
 class FileConError(HTTPException):
     def __init__(self):
         super().__init__(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="can't open the config file")
-
-class FileLogError(HTTPException):
-    def __init__(self, detail):
-        super().__init__(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=detail)

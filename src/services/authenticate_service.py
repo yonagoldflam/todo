@@ -6,8 +6,10 @@ from fastapi.security import OAuth2PasswordBearer
 from src.models.token_payload import TokenPayload
 from config import token_model
 from exceptions import InvalidToken, InvalidPassword
+from config import logger
 
 
+logger = logger.getLogger(__name__)
 class Auth:
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/token")
     def __init__(self):
@@ -20,7 +22,9 @@ class Auth:
         now = datetime.utcnow()
         expire = now + timedelta(minutes=self.exp_token)
         token_payload = TokenPayload(sub=subject, iat=now, exp=expire)
-        return jwt.encode(token_payload.model_dump(), self.secret_key, algorithm=self.algorithm)
+        token = jwt.encode(token_payload.model_dump(), self.secret_key, algorithm=self.algorithm)
+        logger.info(f"token created: {token}")
+        return token
 
 
     def hash_password(self, password: str) -> str:
@@ -33,6 +37,7 @@ class Auth:
     def verify_token(self, token: str = Depends(oauth2_scheme)) -> TokenPayload:
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
+            logger.info(f"token decoded success: {payload}")
             return TokenPayload(**payload)
         except jwt.PyJWTError as e:
             raise InvalidToken(e)

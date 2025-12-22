@@ -2,7 +2,7 @@ import json
 import logging
 import os
 from dotenv import load_dotenv
-from exceptions import NotConfigured, FileConError, FileLogError
+from exceptions import NotConfigured, FileConError
 from src.logging.logger import Logger
 from src.models.mongo_connection import MongoConnection
 from src.models.token_auth import Token
