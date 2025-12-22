@@ -1,7 +1,9 @@
 import json
+import logging
 import os
 from dotenv import load_dotenv
 from exceptions import NotConfigured, FileConError, FileLogError
+from src.logging.logger import Logger
 from src.models.mongo_connection import MongoConnection
 from src.models.token_auth import Token
 from src.models.run_server import RunServer
@@ -28,11 +30,14 @@ if mongo_connection:
     db_model = MongoConnection(**mongo_connection)
 token_model = Token(**config_json["jwt"])
 
+def configure_logging(config_json: dict) -> Logger | logging.Logger:
+    log_type = config_json.get("logging")
+    if log_type:
+        if log_type.get("file"):
+            return FileLogger(**log_type["file"])
 
-log_type = config_json.get("logging")
-if log_type:
-    if log_type.get("file"):
-        logger = FileLogger(**log_type["file"]).get_logger()
+        elif log_type.get("elastic"):
+            return EsLogger(**config_json["logging"]["elastic"])
+    return logging
 
-    elif log_type.get("elastic"):
-        logger = EsLogger(**config_json["logging"]["elastic"]).get_logger()
+logger = configure_logging(config_json)

@@ -3,5 +3,5 @@ import logging
 
 
 class Logger(ABC):
-    def get_logger(self) -> logging.Logger:
+    def getLogger(self, name) -> logging.Logger:
         pass

@@ -6,6 +6,7 @@ from src.db.repo import Repo
 from exceptions import MongoException
 
 
+logger = logger.getLogger(__name__)
 class MongoRepo(Repo):
     def __init__(self, collection_name: str):
         self.collection_name: str = collection_name

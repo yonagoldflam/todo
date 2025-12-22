@@ -7,6 +7,7 @@ from src.routs.todo_routs import todo_router
 from config import logger
 
 
+logger = logger.getLogger(__name__)
 app = FastAPI()
 
 app.include_router(user_router)

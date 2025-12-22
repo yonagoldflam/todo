@@ -23,7 +23,7 @@ class Connection:
             )
 
             self.db = self.client[mongo_db]
-            logger.info("Connection established")
+            logger.getLogger(__name__).info("Connection established")
 
         except PyMongoError as e:
             raise MongoException(str(e))
