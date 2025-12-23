@@ -1,0 +1,31 @@
+{
+    "server": {
+        "host": "127.0.0.1",
+        "port": "8000"
+    },
+    "jwt": {
+        "secret_key": "ein-lecha-cikuy-laalot-al-ze",
+        "algo": "HS256",
+        "exp_token": "30"
+    },
+    "mongo":{
+        "host": "localhost",
+        "port": "27017",
+        "user": "shneyor",
+        "password": "zalmen",
+        "db_name": "todo_db",
+        "auth_db": "admin"
+    },
+    "logging":{
+        "file": {
+            "path": "C:/ToDo/examples/file_logger/logger.log",
+            "level": "INFO"
+        }
+        ,
+        "elastic": {
+            "host": "http://127.0.0.1:9200",
+            "index": "todo",
+            "level": "INFO"
+        }
+    }
+}
